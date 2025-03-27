@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginR, logoutR } from '../../../store/reducers/authReducer'
+import useBackendService from '../../config/services/server/backend-service'
 import AdImages from '../../resources/adImages/adImages'
 import logo1 from '../../resources/svgs/101.svg'
 
@@ -18,6 +19,12 @@ const Login = () => {
   const { mutate, isLoading } = useBackendService('/auth/login', 'post', {
     onSuccess: (data) => {
       dispatch(loginR(response.data))
+      logUserLogin(
+        response.data?.user?.identity,
+        'Login',
+        response.data.status,
+        ipAddress
+      )
       toast.success('Login successfull')
       navigate('/')
     },

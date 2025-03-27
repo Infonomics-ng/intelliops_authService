@@ -3,8 +3,9 @@ import { useMutation } from 'react-query'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { useAuth } from '../contexts/authProvider'
-import { logout } from '../store/reducers/authReducer'
+
+import { logoutR } from '../../../../store/reducers/authReducer'
+import { useAuth } from '../../hooks/context/authProvider'
 import BaseURL from './backendUrl'
 
 const baseURL = `${BaseURL.BACKEND_SERVER_URL}/api/v1`
@@ -61,8 +62,8 @@ const useBackendService = (endpoint, method, options) => {
       const errorMessage = error.response?.data?.message?.toLowerCase()
       if (errorMessage && errorMessage.includes('unauthorized')) {
         // toast.error('Session expired. Please log in again.')
-        dispatch(logout())
-        navigate('/')
+        dispatch(logoutR())
+        navigate('/login')
         return
       }
 
