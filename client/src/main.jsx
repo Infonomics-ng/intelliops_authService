@@ -7,6 +7,7 @@ import App from './App'
 import AuthProvider from './components/config/hooks/context/authProvider.jsx'
 import QueryProvider from './components/config/hooks/providers/query-provider.jsx'
 import AutoLogout from './components/config/services/auto/logout.jsx'
+import './components/resources/css/style.css'
 import { persistor, store } from './store/configureStore.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

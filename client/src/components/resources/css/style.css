@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=fallback');
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+
+/* Additional styles */
+@import 'additional-styles/utility-patterns.css';
+@import 'additional-styles/range-slider.css';
+@import 'additional-styles/toggle-switch.css';
+@import 'additional-styles/flatpickr.css';
+@import 'additional-styles/theme.css';
+@import 'additional-styles/toggle-button.css';
+
+@import 'tailwindcss/utilities';
+.page-item {
+  @apply bg-gray-100 border-gray-300 border shadow-lg  p-2 mb-8 px-3;
+}
+
+.pagination {
+  @apply flex justify-center mt-8 z-10;
+}
+
+.active-pagination {
+  /*@apply bg-yellow-500*/
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+}
