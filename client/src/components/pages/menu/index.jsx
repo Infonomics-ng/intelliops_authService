@@ -43,7 +43,10 @@ const Menu = () => {
             <h2 className='text-4xl font-extrabold text-center text-white'>
               Please select a Module
             </h2>
-            <div className='content-center lg:flex lg:justify-center lg:items-center'>
+            <div
+              style={{ display: 'flex', flexWrap: 'wrap' }}
+              className='content-center lg:flex lg:justify-center lg:items-center'
+            >
               {user.userModules.map((module, index) => (
                 <div
                   key={module.modulecd}
