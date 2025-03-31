@@ -8,7 +8,7 @@ import { logoutR } from '../../../../store/reducers/authReducer'
 import { useAuth } from '../../hooks/context/authProvider'
 import BaseURL from './backendUrl'
 
-const baseURL = `${BaseURL.BACKEND_SERVER_URL}/api/v1`
+const baseURL = `${BaseURL.BACKEND_SERVER_URL}/api/v2`
 
 const useBackendService = (endpoint, method, options) => {
   const { token } = useAuth()

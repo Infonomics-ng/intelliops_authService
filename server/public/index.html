@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <link rel="icon" type="image/svg+xml" href="assets/img/101.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intelliops | API v2</title>
+    <meta content="" name="description" />
+    <meta content="" name="keywords" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <link
+      href="assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <link href="assets/css/style.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <header id="header">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center"
+      >
+        <div class="logo">
+          <h1 class="text-light"></h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero">
+      <div class="hero-container">
+        <h1>Intelliops | API v2</h1>
+        <h2>
+          You just hit the Intelliops API, you are not allowed beyond this point
+        </h2>
+
+        <div class="php-email-form">
+          <div class="row no-gutters">
+            <div class="col-md-6 form-group pr-md-1"></div>
+            <div class="col-md-6 form-group pl-md-1"></div>
+          </div>
+
+          <div class="text-center">
+            <button id="homeButton" type="submit">Head to Home</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script>
+      window.env = {
+        production: false
+      }
+    </script>
+    <script>
+      const homeButton = document.getElementById('homeButton')
+      const productionUrl = 'https://intelliops.connect.mtn.com.ng/'
+      const developmentUrl = 'http://localhost:5173/login'
+      homeButton.onclick = function () {
+        if (window.env.production) {
+          window.location.href = productionUrl
+        } else {
+          window.location.href = developmentUrl
+        }
+      }
+    </script>
+
+    <!-- <script src="assets/js/main.js"></script> -->
+  </body>
+</html>

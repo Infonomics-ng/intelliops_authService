@@ -1,0 +1,5 @@
+.error {
+  color: red;
+  border-top: 1px solid red;
+  transition: 0.5s ease-in;
+}
