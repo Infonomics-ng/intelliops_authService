@@ -44,8 +44,8 @@ const Menu = () => {
               Please select a Module
             </h2>
             <div
-              style={{ display: 'flex', flexWrap: 'wrap' }}
-              className='content-center lg:flex lg:justify-center lg:items-center'
+              style={{ display: 'grid', flexWrap: 'wrap' }}
+              className='content-center lg:grid grid-cols-3 px-20 lg:justify-center lg:items-center'
             >
               {user.userModules.map((module, index) => (
                 <div
@@ -55,7 +55,7 @@ const Menu = () => {
                     (window.location.href = moduleUrls[module.modulecd] || '/')
                   }
                 >
-                  <div className='flex justify-center pt-10 m-auto lg:w-1/4 lg:mx-6 lg:my-8'>
+                  <div className='flex justify-center pt-10 m-auto lg:w-1/4 lg:mx-6 lg:my-4'>
                     <div className='relative w-64 h-48'>
                       <div className='absolute top-0 left-0 flex items-center w-64 h-40 mt-6 ml-6 bg-white border-8 border-gray-700 border-solid rounded-lg'>
                         <div className='w-1/3 h-40'></div>

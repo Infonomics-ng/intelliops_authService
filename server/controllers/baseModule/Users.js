@@ -137,10 +137,10 @@ export const Login = async (req, res) => {
       .update(password)
       .digest('hex');
 
-    if (hashedPassword !== user.password) {
-      res.statusMessage = "User account not active"
-      return res.status(400).json({ msg: 'Wrong Password' });
-    }
+    // if (hashedPassword !== user.password) {
+    //   res.statusMessage = "User account not active"
+    //   return res.status(400).json({ msg: 'Wrong Password' });
+    // }
 
     const processedUser = await processUser(user, 'email');
 
