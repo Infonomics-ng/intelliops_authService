@@ -9,6 +9,7 @@ const UserModule = db.define(
     usercd: { type: DataTypes.STRING, allowNull: false },
     module_name: { type: DataTypes.STRING, allowNull: false },
     modulecd: { type: DataTypes.STRING, allowNull: false },
+    url: { type: DataTypes.STRING, allowNull: false },
     timestamp: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     createdAt: { type: DataTypes.DATE, allowNull: true },  // Allow NULL values
     updatedAt: { type: DataTypes.DATE, allowNull: true },  // Allow NULL values

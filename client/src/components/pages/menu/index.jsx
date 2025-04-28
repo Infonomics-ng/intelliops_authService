@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { logoutR } from '../../../store/reducers/authReducer'
 import { useAuth } from '../../config/hooks/context/authProvider'
 import mtn from '../../resources/images/mtn.png'
 
 const Menu = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const moduleUrls = import.meta.env.VITE_MODULE_URLS
-    ? JSON.parse(import.meta.env.VITE_MODULE_URLS)
-    : {}
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (user.firstTime === 1) {
@@ -16,12 +16,17 @@ const Menu = () => {
     } else if (!user.userModules || user.userModules.length === 0) {
       navigate('/no_module')
     } else if (user.userModules.length === 1) {
-      const moduleCode = user.userModules[0].modulecd
-      if (moduleUrls[moduleCode]) {
-        window.location.href = moduleUrls[moduleCode]
+      const moduleUrl = user.userModules[0]?.url
+      if (moduleUrl) {
+        window.location.href = moduleUrl
       }
     }
-  }, [user, navigate, moduleUrls])
+  }, [user, navigate])
+
+  const handleLogout = () => {
+    dispatch(logoutR())
+    navigate('/login')
+  }
 
   if (user.userModules.length > 1) {
     return (
@@ -36,6 +41,14 @@ const Menu = () => {
           className='min-h-screen py-12 bg-gray-100'
         >
           <section>
+            <div className='flex justify-end p-4'>
+              <button
+                onClick={handleLogout}
+                className='px-4 py-2 font-bold text-white bg-red-600 rounded hover:bg-red-700'
+              >
+                Logout
+              </button>
+            </div>
             <h1 className='text-4xl font-extrabold text-center text-white'>
               Welcome to Intelliops
             </h1>
@@ -44,18 +57,16 @@ const Menu = () => {
               Please select a Module
             </h2>
             <div
-              style={{ display: 'grid', flexWrap: 'wrap' }}
-              className='content-center lg:grid grid-cols-3 px-20 lg:justify-center lg:items-center'
+              style={{ display: 'flex', flexWrap: 'wrap' }}
+              className='content-center lg:flex lg:justify-center lg:items-center'
             >
               {user.userModules.map((module, index) => (
                 <div
                   key={module.modulecd}
                   className='shadow cursor-pointer'
-                  onClick={() =>
-                    (window.location.href = moduleUrls[module.modulecd] || '/')
-                  }
+                  onClick={() => (window.location.href = module.url || '/')}
                 >
-                  <div className='flex justify-center pt-10 m-auto lg:w-1/4 lg:mx-6 lg:my-4'>
+                  <div className='flex justify-center pt-10 m-auto lg:w-1/4 lg:mx-6 lg:my-8'>
                     <div className='relative w-64 h-48'>
                       <div className='absolute top-0 left-0 flex items-center w-64 h-40 mt-6 ml-6 bg-white border-8 border-gray-700 border-solid rounded-lg'>
                         <div className='w-1/3 h-40'></div>
@@ -93,7 +104,7 @@ const Menu = () => {
     )
   }
 
-  return null
+  return <div>Login</div>
 }
 
 export default Menu

@@ -18,8 +18,7 @@ const generateTokens = (
   email,
   identity,
   firstTime
-  // userRoles,
-  // userPrivileges
+
 ) => {
   const accessToken = jwt.sign(
     {
@@ -28,7 +27,6 @@ const generateTokens = (
       email,
       identity,
       firstTime,
-      //  userRoles, userPrivileges
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -43,7 +41,6 @@ const generateTokens = (
       email,
       identity,
       firstTime,
-      //  userRoles, userPrivileges
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
@@ -77,7 +74,7 @@ const processUser = async (user, identityField) => {
 
   const userModules = await UserModule.findAll({
     where: { usercd: identity },
-    attributes: ['usercd', 'module_name', 'modulecd', 'timestamp'],
+    attributes: ['usercd', 'module_name', 'modulecd', 'url', 'timestamp'],
   });
 
   const { accessToken, refreshToken } = generateTokens(
