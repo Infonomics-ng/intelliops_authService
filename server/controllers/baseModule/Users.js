@@ -77,6 +77,42 @@ const processUser = async (user, identityField) => {
     attributes: ['usercd', 'module_name', 'modulecd', 'url', 'timestamp'],
   });
 
+
+  const userRoles = await UserRole.findAll({
+    where: {
+      [Op.or]: [{ usercd: email }, { usercd: identity }]
+    },
+    attributes: ['id', 'usercd', 'sysrolecd']
+  })
+  const userPrivileges = await db.query(
+    ` SELECT sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.urlpath, sm.grpmenu,
+            b.sysprivilegename, max(b.view) view, max(b.crud) crud 
+            FROM userrole a
+            JOIN infopos.sysrole b ON a.sysrolecd = b.sysrolecd
+            left JOIN intelliopsapp.sysmenu sm ON b.sysprivilegename = sm.sysprivilegename
+            WHERE a.usercd = :identity
+            GROUP BY sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.grpmenu,
+            b.sysprivilegename
+            order by sm.seqno;
+          `,
+    {
+      replacements: { identity: identity },
+      type: QueryTypes.SELECT
+    }
+  );
+
+  const grpMenu = await db.query(
+    ` SELECT distinct a.id,  '${identity}' usercd, a.grpmenu, a.seqno, a.ftnclass, a.label, a.activestatus, 
+            a.urlpath, a.sysprivilegename, a.pathincludes, a.icon
+            from intelliopsapp.sysmenu a 
+            where a.ftnclass = 'SideGrpmenu';
+    `,
+    {
+      type: QueryTypes.SELECT
+    }
+  );
+
+
   const { accessToken, refreshToken } = generateTokens(
     usercd,
     name,
@@ -104,7 +140,10 @@ const processUser = async (user, identityField) => {
       identity,
       firstTime,
       location,
-      userModules
+      userModules,
+      userRoles,
+      userPrivileges,
+      grpMenu
     }
   };
 };
