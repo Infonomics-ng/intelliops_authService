@@ -1,8 +1,10 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
+import db from '../../config/Database.js';
 import LocationUser from '../../models/POSModule/LocationuserModel.js';
 import Users from '../../models/baseModule/UserModel.js';
+import Userrole from '../../models/baseModule/UserroleModel.js';
 import UserModule from '../../models/baseModule/moduleModel.js';
 import { Email } from '../../utils/mail.js';
 import { generateOtp } from '../../utils/otp.js';
@@ -78,37 +80,53 @@ const processUser = async (user, identityField) => {
   });
 
 
-  const userRoles = await UserRole.findAll({
+
+  // const userPrivileges = await db.query(
+  //   ` SELECT sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.urlpath, sm.grpmenu,
+  //           b.sysprivilegename, max(b.view) view, max(b.crud) crud 
+  //           FROM userrole a
+  //           JOIN infopos.sysrole b ON a.sysrolecd = b.sysrolecd
+  //           left JOIN intelliopsapp.sysmenu sm ON b.sysprivilegename = sm.sysprivilegename
+  //           WHERE a.usercd = :identity
+  //           GROUP BY sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.grpmenu,
+  //           b.sysprivilegename
+  //           order by sm.seqno;
+  //         `,
+  //   {
+  //     replacements: { identity: identity },
+  //     type: QueryTypes.SELECT
+  //   }
+  // );
+
+  // const grpMenu = await db.query(
+  //   ` SELECT distinct a.id,  '${identity}' usercd, a.grpmenu, a.seqno, a.ftnclass, a.label, a.activestatus, 
+  //           a.urlpath, a.sysprivilegename, a.pathincludes, a.icon
+  //           from intelliopsapp.sysmenu a 
+  //           where a.ftnclass = 'SideGrpmenu';
+  //   `,
+  //   {
+  //     type: QueryTypes.SELECT
+  //   }
+  // );
+
+  const userRoles = await Userrole.findAll({
     where: {
-      [Op.or]: [{ usercd: email }, { usercd: identity }]
+      [Op.or]: [{ usercd: email }, { usercd: identity }],
     },
-    attributes: ['id', 'usercd', 'sysrolecd']
-  })
+    attributes: ['id', 'usercd', 'sysrolecd'],
+  });
+
   const userPrivileges = await db.query(
-    ` SELECT sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.urlpath, sm.grpmenu,
-            b.sysprivilegename, max(b.view) view, max(b.crud) crud 
-            FROM userrole a
-            JOIN infopos.sysrole b ON a.sysrolecd = b.sysrolecd
-            left JOIN intelliopsapp.sysmenu sm ON b.sysprivilegename = sm.sysprivilegename
-            WHERE a.usercd = :identity
-            GROUP BY sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.grpmenu,
-            b.sysprivilegename
-            order by sm.seqno;
-          `,
+    `
+  SELECT b.sysprivilegename, max(b.view) view, max(b.crud) crud 
+  FROM userrole a
+  JOIN sysrole b ON a.sysrolecd = b.sysrolecd
+  WHERE a.usercd = :identity
+  GROUP BY b.sysprivilegename;
+`,
     {
       replacements: { identity: identity },
-      type: QueryTypes.SELECT
-    }
-  );
-
-  const grpMenu = await db.query(
-    ` SELECT distinct a.id,  '${identity}' usercd, a.grpmenu, a.seqno, a.ftnclass, a.label, a.activestatus, 
-            a.urlpath, a.sysprivilegename, a.pathincludes, a.icon
-            from intelliopsapp.sysmenu a 
-            where a.ftnclass = 'SideGrpmenu';
-    `,
-    {
-      type: QueryTypes.SELECT
+      type: QueryTypes.SELECT,
     }
   );
 
@@ -143,7 +161,7 @@ const processUser = async (user, identityField) => {
       userModules,
       userRoles,
       userPrivileges,
-      grpMenu
+      // grpMenu
     }
   };
 };

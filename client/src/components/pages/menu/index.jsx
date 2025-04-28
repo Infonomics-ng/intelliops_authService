@@ -6,9 +6,13 @@ import { useAuth } from '../../config/hooks/context/authProvider'
 import mtn from '../../resources/images/mtn.png'
 
 const Menu = () => {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const userData = {
+    user: user,
+    token: token
+  }
 
   useEffect(() => {
     if (user.firstTime === 1) {
@@ -26,6 +30,12 @@ const Menu = () => {
   const handleLogout = () => {
     dispatch(logoutR())
     navigate('/login')
+  }
+
+  const postUserDataToModule = (url, userData) => {
+    const encodedData = encodeURIComponent(JSON.stringify(userData))
+    console.log(encodedData)
+    window.location.href = `${url}?UA=${encodedData}`
   }
 
   if (user.userModules.length > 1) {
@@ -64,7 +74,7 @@ const Menu = () => {
                 <div
                   key={module.modulecd}
                   className='shadow cursor-pointer'
-                  onClick={() => (window.location.href = module.url || '/')}
+                  onClick={() => postUserDataToModule(module.url, userData)}
                 >
                   <div className='flex justify-center pt-10 m-auto lg:w-1/4 lg:mx-6 lg:my-8'>
                     <div className='relative w-64 h-48'>
