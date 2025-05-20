@@ -34,7 +34,6 @@ const Menu = () => {
 
   const postUserDataToModule = (url, userData) => {
     const encodedData = encodeURIComponent(JSON.stringify(userData))
-    console.log(encodedData)
     window.location.href = `${url}?UA=${encodedData}`
   }
 
