@@ -1,27 +1,15 @@
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
-import { Op, QueryTypes } from 'sequelize';
-import db from '../../config/Database.js';
-import LocationUser from '../../models/POSModule/LocationuserModel.js';
-import Users from '../../models/baseModule/UserModel.js';
-import Userrole from '../../models/baseModule/UserroleModel.js';
-import UserModule from '../../models/baseModule/moduleModel.js';
-import { Email } from '../../utils/mail.js';
-import { generateOtp } from '../../utils/otp.js';
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { Op, QueryTypes } from "sequelize";
+import db from "../../config/Database.js";
+import LocationUser from "../../models/POSModule/LocationuserModel.js";
+import Users from "../../models/baseModule/UserModel.js";
+import Userrole from "../../models/baseModule/UserroleModel.js";
+import UserModule from "../../models/baseModule/moduleModel.js";
+import { Email } from "../../utils/mail.js";
+import { generateOtp } from "../../utils/otp.js";
 
-
-
-
-
-
-const generateTokens = (
-  usercd,
-  name,
-  email,
-  identity,
-  firstTime
-
-) => {
+const generateTokens = (usercd, name, email, identity, firstTime) => {
   const accessToken = jwt.sign(
     {
       usercd,
@@ -32,7 +20,7 @@ const generateTokens = (
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: '1600s',
+      expiresIn: "1600s",
     }
   );
 
@@ -46,7 +34,7 @@ const generateTokens = (
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: '1d',
+      expiresIn: "1d",
     }
   );
 
@@ -65,25 +53,23 @@ const processUser = async (user, identityField) => {
       [Op.or]: [{ usercd: email }, { usercd: identity }],
     },
     attributes: [
-      'posname',
-      'shopcd',
-      'shopname',
-      'locationcd',
-      'locationname',
-      'prylocation_flag',
+      "posname",
+      "shopcd",
+      "shopname",
+      "locationcd",
+      "locationname",
+      "prylocation_flag",
     ],
   });
 
   const userModules = await UserModule.findAll({
     where: { usercd: identity },
-    attributes: ['usercd', 'module_name', 'modulecd', 'url', 'timestamp'],
+    attributes: ["usercd", "module_name", "modulecd", "url", "timestamp"],
   });
-
-
 
   // const userPrivileges = await db.query(
   //   ` SELECT sm.seqno, sm.id, sm.ftnclass, a.usercd, sm.pathincludes, sm.icon, sm.label, sm.urlpath, sm.grpmenu,
-  //           b.sysprivilegename, max(b.view) view, max(b.crud) crud 
+  //           b.sysprivilegename, max(b.view) view, max(b.crud) crud
   //           FROM userrole a
   //           JOIN infopos.sysrole b ON a.sysrolecd = b.sysrolecd
   //           left JOIN intelliopsapp.sysmenu sm ON b.sysprivilegename = sm.sysprivilegename
@@ -99,9 +85,9 @@ const processUser = async (user, identityField) => {
   // );
 
   // const grpMenu = await db.query(
-  //   ` SELECT distinct a.id,  '${identity}' usercd, a.grpmenu, a.seqno, a.ftnclass, a.label, a.activestatus, 
+  //   ` SELECT distinct a.id,  '${identity}' usercd, a.grpmenu, a.seqno, a.ftnclass, a.label, a.activestatus,
   //           a.urlpath, a.sysprivilegename, a.pathincludes, a.icon
-  //           from intelliopsapp.sysmenu a 
+  //           from intelliopsapp.sysmenu a
   //           where a.ftnclass = 'SideGrpmenu';
   //   `,
   //   {
@@ -113,7 +99,7 @@ const processUser = async (user, identityField) => {
     where: {
       [Op.or]: [{ usercd: email }, { usercd: identity }],
     },
-    attributes: ['id', 'usercd', 'sysrolecd'],
+    attributes: ["id", "usercd", "sysrolecd"],
   });
 
   const userPrivileges = await db.query(
@@ -129,7 +115,6 @@ const processUser = async (user, identityField) => {
       type: QueryTypes.SELECT,
     }
   );
-
 
   const { accessToken, refreshToken } = generateTokens(
     usercd,
@@ -162,7 +147,7 @@ const processUser = async (user, identityField) => {
       userRoles,
       userPrivileges,
       // grpMenu
-    }
+    },
   };
 };
 
@@ -177,40 +162,38 @@ export const Login = async (req, res) => {
     });
 
     if (!user) {
-      res.statusMessage = "User not found"
-      return res.status(400).json({ msg: 'User not found' });
+      res.statusMessage = "User not found";
+      return res.status(400).json({ msg: "User not found" });
     }
 
-    if (user.active == 'FALSE') {
-      res.statusMessage = "User account not found"
-      return res.status(400).json({ msg: 'User account not active' });
+    if (user.active == "FALSE") {
+      res.statusMessage = "User account not found";
+      return res.status(400).json({ msg: "User account not active" });
     }
 
     const hashedPassword = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(password)
-      .digest('hex');
+      .digest("hex");
 
-    // if (hashedPassword !== user.password) {
-    //   res.statusMessage = "User account not active"
-    //   return res.status(400).json({ msg: 'Wrong Password' });
-    // }
+    if (hashedPassword !== user.password) {
+      return res.status(400).json({ msg: "Wrong Password" });
+    }
 
-    const processedUser = await processUser(user, 'email');
+    const processedUser = await processUser(user, "email");
 
-    res.cookie('refreshToken', processedUser.refreshToken, {
+    res.cookie("refreshToken", processedUser.refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ status: 'success', ...processedUser });
+    return res.status(200).json({ status: "success", ...processedUser });
   } catch (error) {
     console.error(error);
-    res.statusMessage = error.message
-    res.status(500).json({ msg: 'Login Exception Raised' });
+    res.statusMessage = error.message;
+    res.status(500).json({ msg: "Login Exception Raised" });
   }
 };
-
 
 export const Logout = async (req, res) => {
   try {
@@ -232,10 +215,10 @@ export const Logout = async (req, res) => {
         },
       }
     );
-    res.clearCookie('refreshToken');
+    res.clearCookie("refreshToken");
     return res.sendStatus(200);
   } catch (error) {
-    return res.status(404).json({ msg: '404 Logout Exception Raised ' });
+    return res.status(404).json({ msg: "404 Logout Exception Raised " });
   }
 };
 
@@ -250,7 +233,7 @@ export const ForgotPassword = async (req, res) => {
       },
     });
     if (!updated) {
-      res.status(404).json({ message: 'There is no user with that address' });
+      res.status(404).json({ message: "There is no user with that address" });
     } else {
       await Users.update(
         { refresh_token: token },
@@ -261,16 +244,16 @@ export const ForgotPassword = async (req, res) => {
         }
       );
 
-      const url = `${req.protocol}://${req.get('host')}/newPassword/${token}`;
+      const url = `${req.protocol}://${req.get("host")}/newPassword/${token}`;
 
-      await new Email(email, url, token, '').sendPasswordReset();
+      await new Email(email, url, token, "").sendPasswordReset();
       res.status(200).json({
-        status: 'success',
-        message: 'Token sent to email!',
+        status: "success",
+        message: "Token sent to email!",
       });
     }
   } catch (err) {
-    res.status(500).json({ message: 'There was an error sending the email' });
+    res.status(500).json({ message: "There was an error sending the email" });
   }
 };
 
@@ -283,15 +266,15 @@ export const newPassword = async (req, res) => {
     },
   });
   if (!user) {
-    res.status(400).json({ msg: 'Token is invalid or has expired' });
+    res.status(400).json({ msg: "Token is invalid or has expired" });
   } else {
     const { password, confPassword } = req.body;
-    if (password == '') {
-      return res.status(400).json({ msg: 'Password cannot be blank' });
+    if (password == "") {
+      return res.status(400).json({ msg: "Password cannot be blank" });
     } else if (password !== confPassword) {
       return res
         .status(400)
-        .json({ msg: 'Password and Confirm Password do not match' });
+        .json({ msg: "Password and Confirm Password do not match" });
     } else {
       await Users.update(
         { password: password },
@@ -301,7 +284,7 @@ export const newPassword = async (req, res) => {
           },
         }
       );
-      res.status(200).json({ msg: 'Password Changed' });
+      res.status(200).json({ msg: "Password Changed" });
     }
   }
 };
