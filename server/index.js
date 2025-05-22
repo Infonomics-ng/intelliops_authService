@@ -20,7 +20,11 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-const whitelist = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const whitelist = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+];
 
 const corsOptions = {
   credentials: true,
@@ -59,7 +63,7 @@ app.get("*", (req, res, next) => {
   res.redirect("/");
 });
 
-const port = 8081;
+const port = 8080;
 
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...", err);
